@@ -3,17 +3,18 @@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useTRPC } from "@/trpc/client";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { useState } from "react";
 import { toast } from "sonner";
 
 export default function Page() {
   const [value, setValue] = useState("");
   const trpc = useTRPC();
-  const invoke = useMutation(
-    trpc.invoke.mutationOptions({
+  const { data: messages } = useQuery(trpc.messages.get.queryOptions());
+  const createMessage = useMutation(
+    trpc.messages.create.mutationOptions({
       onSuccess: () => {
-        toast.success("Background job invoked");
+        toast.success("Message created");
       },
     }),
   );
@@ -27,13 +28,22 @@ export default function Page() {
       />
 
       <Button
-        disabled={invoke.isPending}
+        disabled={createMessage.isPending}
         onClick={() => {
-          invoke.mutate({ value });
+          createMessage.mutate({ value });
         }}
       >
-        Invoke background job
+        Create message
       </Button>
+
+      <div className='flex flex-col gap-2'>
+        {messages?.map((message) => (
+          <div key={message.id}>
+            <div>{message.content}</div>
+            <div>{JSON.stringify(message.fragment?.files)}</div>
+          </div>
+        ))}
+      </div>
     </div>
   );
 }

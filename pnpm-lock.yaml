@@ -161,6 +161,9 @@ dependencies:
   next-themes:
     specifier: ^0.4.6
     version: 0.4.6(react-dom@19.1.0)(react@19.1.0)
+  prismjs:
+    specifier: ^1.30.0
+    version: 1.30.0
   random-word-slugs:
     specifier: ^0.1.7
     version: 0.1.7
@@ -226,6 +229,9 @@ devDependencies:
   '@types/node':
     specifier: ^20
     version: 20.19.7
+  '@types/prismjs':
+    specifier: ^1.26.5
+    version: 1.26.5
   '@types/react':
     specifier: ^19
     version: 19.1.8
@@ -4057,6 +4063,10 @@ packages:
       pg-protocol: 1.10.3
       pg-types: 2.2.0
     dev: false
+
+  /@types/prismjs@1.26.5:
+    resolution: {integrity: sha512-AUZTa7hQ2KY5L7AmtSiqxlhWxb4ina0yd8hNbl4TWuqnv/pFP0nDMb3YrfSBf4hJVGLh2YEIBfKaBW/9UEl6IQ==}
+    dev: true
 
   /@types/react-dom@19.1.6(@types/react@19.1.8):
     resolution: {integrity: sha512-4hOiT/dwO8Ko0gV1m/TJZYk3y0KBnY9vzDh7W+DH17b2HFSOGgdj33dhihPeuy3l0q23+4e+hoXHV6hCC4dCXw==}
@@ -7931,6 +7941,11 @@ packages:
     resolution: {integrity: sha512-vkcDPrRZo1QZLbn5RLGPpg/WmIQ65qoWWhcGKf/b5eplkkarX0m9z8ppCat4mlOqUsWpyNuYgO3VRyrYHSzX5g==}
     engines: {node: '>= 0.8.0'}
     dev: true
+
+  /prismjs@1.30.0:
+    resolution: {integrity: sha512-DEvV2ZF2r2/63V+tK8hQvrR2ZGn10srHbXviTlcv7Kpzw8jWiNTqbVgjO3IY8RxrrOUF8VPMQQFysYYYv0YZxw==}
+    engines: {node: '>=6'}
+    dev: false
 
   /prop-types@15.8.1:
     resolution: {integrity: sha512-oj87CgZICdulUohogVAR7AjlC0327U4el4L6eAvOqCeudMDVU0NThNaV+b9Df4dXgSP1gXMTnPdhfe/2qDH5cg==}

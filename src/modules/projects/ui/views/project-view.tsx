@@ -6,21 +6,31 @@ import {
   ResizablePanel,
   ResizablePanelGroup,
 } from "@/components/ui/resizable";
+import { TFragment } from "@/db/schema";
+import { ProjectHeader } from "@/modules/projects/ui/components/project-header";
 
-import { Suspense } from "react";
+import { Suspense, useState } from "react";
 
 export const ProjectView = ({ projectId }: { projectId: string }) => {
-  // const trpc = useTRPC();
-  // const { data: project } = useSuspenseQuery(
-  //   trpc.projects.get.queryOptions({ projectId: Number(projectId) }),
-  // );
+  const [activeFragment, setActiveFragment] = useState<TFragment | null>(null);
 
   return (
     <div className='h-screen w-screen'>
       <ResizablePanelGroup direction='horizontal'>
-        <ResizablePanel defaultSize={35} minSize={30}>
+        <ResizablePanel
+          defaultSize={35}
+          minSize={30}
+          className='flex flex-col min-h-0'
+        >
           <Suspense fallback={<div>Loading...</div>}>
-            <MessagesContainer projectId={projectId} />
+            <ProjectHeader projectId={projectId} />
+          </Suspense>
+          <Suspense fallback={<div>Loading...</div>}>
+            <MessagesContainer
+              projectId={projectId}
+              activeFragment={activeFragment}
+              setActiveFragment={setActiveFragment}
+            />
           </Suspense>
         </ResizablePanel>
         <ResizableHandle />

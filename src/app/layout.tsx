@@ -4,6 +4,7 @@ import { TRPCReactProvider } from "@/trpc/client";
 
 import { Playfair_Display, Poppins, Roboto_Mono } from "next/font/google";
 import { Toaster } from "sonner";
+import { ThemeProvider } from "next-themes";
 
 export const metadata: Metadata = {
   title: "Vibable",
@@ -35,12 +36,19 @@ export default function RootLayout({
 }>) {
   return (
     <TRPCReactProvider>
-      <html lang='en'>
+      <html lang='en' suppressHydrationWarning>
         <body
           className={`${poppins.variable} ${playfairDisplay.variable} ${robotoMono.variable} antialiased`}
         >
-          <Toaster />
-          {children}
+          <ThemeProvider
+            attribute='class'
+            defaultTheme='system'
+            enableSystem
+            disableTransitionOnChange
+          >
+            <Toaster />
+            {children}
+          </ThemeProvider>
         </body>
       </html>
     </TRPCReactProvider>

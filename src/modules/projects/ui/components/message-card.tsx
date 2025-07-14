@@ -56,13 +56,13 @@ const MessageFragment = ({
         className={cn(
           "cursor-pointer w-fit flex items-start text-start gap-2 border rounded-lg p-3 bg-muted hover:bg-secondary transition-colors",
           isActiveFragment &&
-            "bg-primary text-primary-foreground border-primary hover:bg-primary/90",
+            "bg-accent text-accent-foreground border-accent hover:bg-accent/90",
         )}
       >
         <Code2Icon className='size-4 mt-0.5' />
         <div className='flex flex-col flex-1'>
           <span className='text-sm font-medium'>{fragment.title}</span>
-          <span className='text-sm text-muted-foreground'>Preview</span>
+          <span className='text-sm'>Preview</span>
         </div>
       </button>
     </div>

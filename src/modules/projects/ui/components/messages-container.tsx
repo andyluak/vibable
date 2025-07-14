@@ -1,10 +1,20 @@
+import { TFragment } from "@/db/schema";
 import MessageCard from "@/modules/projects/ui/components/message-card";
 import MessageForm from "@/modules/projects/ui/components/message-form";
+import { MessageLoading } from "@/modules/projects/ui/components/message-loading";
 import { useTRPC } from "@/trpc/client";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import React, { useEffect, useRef } from "react";
 
-export const MessagesContainer = ({ projectId }: { projectId: string }) => {
+export const MessagesContainer = ({
+  projectId,
+  activeFragment,
+  setActiveFragment,
+}: {
+  projectId: string;
+  activeFragment: TFragment | null;
+  setActiveFragment: (fragment: TFragment | null) => void;
+}) => {
   const trpc = useTRPC();
   const bottomRef = useRef<HTMLDivElement>(null);
 
@@ -16,17 +26,20 @@ export const MessagesContainer = ({ projectId }: { projectId: string }) => {
 
   useEffect(() => {
     const lastAssistantMessage = messages.findLast(
-      (m) => m.role === "assistant",
+      (m) => m.role === "assistant" && m.fragment,
     );
 
     if (lastAssistantMessage) {
-      // TODO: Set active fragment
+      setActiveFragment(lastAssistantMessage.fragment);
     }
-  }, [messages]);
+  }, [messages, setActiveFragment]);
 
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: "smooth", block: "end" });
   }, [messages.length]);
+
+  const lastMessage = messages[messages.length - 1];
+  const isLastMessageUser = lastMessage?.role === "user";
 
   return (
     <div className='flex flex-col flex-1 min-h-0 h-full'>
@@ -39,12 +52,15 @@ export const MessagesContainer = ({ projectId }: { projectId: string }) => {
               <MessageCard
                 key={message.id}
                 message={message}
-                isActiveFragment={false}
-                onFragmentClick={() => {}}
+                isActiveFragment={activeFragment?.id === message.fragment?.id}
+                onFragmentClick={() => {
+                  setActiveFragment(message.fragment);
+                }}
               />
             );
           })}
         </div>
+        {isLastMessageUser && <MessageLoading />}
         <div ref={bottomRef} />
       </div>
       <div className='relative p-3 pt-1'>

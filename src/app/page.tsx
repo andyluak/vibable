@@ -3,47 +3,46 @@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useTRPC } from "@/trpc/client";
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { useMutation } from "@tanstack/react-query";
 import { useState } from "react";
 import { toast } from "sonner";
+import { useRouter } from "next/navigation";
 
 export default function Page() {
+  const router = useRouter();
   const [value, setValue] = useState("");
+
   const trpc = useTRPC();
-  const { data: messages } = useQuery(trpc.messages.get.queryOptions());
-  const createMessage = useMutation(
-    trpc.messages.create.mutationOptions({
-      onSuccess: () => {
-        toast.success("Message created");
+
+  const createProject = useMutation(
+    trpc.projects.create.mutationOptions({
+      onSuccess: (project) => {
+        toast.success("Project created");
+        router.push(`/projects/${project.id}`);
+      },
+      onError: (error) => {
+        toast.error(error.message);
       },
     }),
   );
 
   return (
     <div className='h-screen flex flex-col items-center justify-center gap-4'>
-      <Input
-        value={value}
-        onChange={(e) => setValue(e.target.value)}
-        className='w-full max-w-md'
-      />
-
-      <Button
-        disabled={createMessage.isPending}
-        onClick={() => {
-          createMessage.mutate({ value });
+      <form
+        className='max-w-4xl w-full items-center mx-auto flex flex-col gap-4'
+        onSubmit={(e) => {
+          e.preventDefault();
+          createProject.mutate({ value });
         }}
       >
-        Create message
-      </Button>
+        <Input
+          value={value}
+          onChange={(e) => setValue(e.target.value)}
+          className='w-full max-w-md'
+        />
 
-      <div className='flex flex-col gap-2'>
-        {messages?.map((message) => (
-          <div key={message.id}>
-            <div>{message.content}</div>
-            <div>{JSON.stringify(message.fragment?.files)}</div>
-          </div>
-        ))}
-      </div>
+        <Button disabled={createProject.isPending || !value}>Submit</Button>
+      </form>
     </div>
   );
 }

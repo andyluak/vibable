@@ -8,8 +8,18 @@ import {
 } from "drizzle-orm/pg-core";
 import { relations } from "drizzle-orm";
 
+export const projects = pgTable("projects", {
+  id: serial("id").primaryKey(),
+  name: text("name").notNull(),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+  updatedAt: timestamp("updated_at").notNull().defaultNow(),
+});
+
 export const messages = pgTable("messages", {
   id: serial("id").primaryKey(),
+  projectId: integer("project_id")
+    .references(() => projects.id, { onDelete: "cascade" })
+    .notNull(),
   content: text("content").notNull(),
   role: text("role").notNull().default("user").$type<"user" | "assistant">(),
   type: text("type").notNull().default("").$type<"result" | "error">(),
@@ -30,6 +40,10 @@ export const fragments = pgTable("fragments", {
   createdAt: timestamp("created_at").notNull().defaultNow(),
   updatedAt: timestamp("updated_at").notNull().defaultNow(),
 });
+
+export const projectsRelations = relations(projects, ({ many }) => ({
+  messages: many(messages),
+}));
 
 export const messagesRelations = relations(messages, ({ one }) => ({
   fragment: one(fragments, {

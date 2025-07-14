@@ -202,6 +202,7 @@ export const codeAgentFunction = inngest.createFunction(
       const [message] = await db
         .insert(messages)
         .values({
+          projectId: event.data.projectId,
           content: isError
             ? `Something went wrong. Please try again.`
             : result.state.data.summary,

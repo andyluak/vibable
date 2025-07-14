@@ -13,6 +13,8 @@
     "db:reset": "drizzle-kit drop && drizzle-kit push"
   },
   "dependencies": {
+    "@clerk/nextjs": "^6.25.0",
+    "@clerk/themes": "^2.2.56",
     "@e2b/code-interpreter": "^1.5.1",
     "@hookform/resolvers": "^5.1.1",
     "@icons-pack/react-simple-icons": "^13.5.0",

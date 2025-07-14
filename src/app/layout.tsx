@@ -5,6 +5,8 @@ import { TRPCReactProvider } from "@/trpc/client";
 import { Playfair_Display, Poppins, Roboto_Mono } from "next/font/google";
 import { Toaster } from "sonner";
 import { ThemeProvider } from "next-themes";
+import { ClerkProvider } from "@clerk/nextjs";
+import { Navbar } from "@/modules/home/ui/components/navbar";
 
 export const metadata: Metadata = {
   title: "Vibable",
@@ -35,22 +37,28 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <TRPCReactProvider>
-      <html lang='en' suppressHydrationWarning>
-        <body
-          className={`${poppins.variable} ${playfairDisplay.variable} ${robotoMono.variable} antialiased`}
-        >
-          <ThemeProvider
-            attribute='class'
-            defaultTheme='system'
-            enableSystem
-            disableTransitionOnChange
-          >
-            <Toaster />
-            {children}
-          </ThemeProvider>
-        </body>
-      </html>
-    </TRPCReactProvider>
+    <ClerkProvider>
+      <TRPCReactProvider>
+        <html lang='en' suppressHydrationWarning>
+          <body lang='en'>
+            <ThemeProvider
+              attribute='class'
+              defaultTheme='system'
+              enableSystem
+              disableTransitionOnChange
+            >
+              <Navbar />
+              <div className='absolute inset-0 -z-10 size-full bg-background dark:bg-[radial-gradient(#393e4a_1px,transparent_1px)] bg-[radial-gradient(#dadde2_1px,transparent_1px)] [background-size:16px_16px]' />
+              <main
+                className={`${poppins.variable} ${playfairDisplay.variable} ${robotoMono.variable} antialiased`}
+              >
+                <Toaster />
+                {children}
+              </main>
+            </ThemeProvider>
+          </body>
+        </html>
+      </TRPCReactProvider>
+    </ClerkProvider>
   );
 }

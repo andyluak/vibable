@@ -2,13 +2,13 @@ import { db } from "@/db/drizzle";
 import { messages } from "@/db/schema";
 import { inngest } from "@/inngest/client";
 import { INGEST_FUNCTIONS } from "@/inngest/function";
-import { createTRPCRouter, baseProcedure } from "@/trpc/init";
+import { createTRPCRouter, protectedProcedure } from "@/trpc/init";
 
 import { z } from "zod";
 import { eq } from "drizzle-orm";
 
 export const messagesRouter = createTRPCRouter({
-  create: baseProcedure
+  create: protectedProcedure
     .input(
       z.object({
         value: z
@@ -39,7 +39,7 @@ export const messagesRouter = createTRPCRouter({
 
       return createdMessage;
     }),
-  get: baseProcedure
+  get: protectedProcedure
     .input(
       z.object({
         projectId: z.number().min(1, { message: "Project is required" }),

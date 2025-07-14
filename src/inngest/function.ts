@@ -18,7 +18,7 @@ export const INGEST_FUNCTIONS = {
     id: "code-agent",
     trigger: "code-agent/run",
   },
-};
+} as const;
 
 type AgentState = {
   summary: string;

@@ -3,14 +3,14 @@ import { messages, projects } from "@/db/schema";
 import { inngest } from "@/inngest/client";
 import { generateSlug } from "random-word-slugs";
 import { INGEST_FUNCTIONS } from "@/inngest/function";
-import { createTRPCRouter, baseProcedure } from "@/trpc/init";
+import { createTRPCRouter, protectedProcedure } from "@/trpc/init";
 
 import { z } from "zod";
-import { eq } from "drizzle-orm";
+import { and, eq } from "drizzle-orm";
 import { TRPCError } from "@trpc/server";
 
 export const projectsRouter = createTRPCRouter({
-  create: baseProcedure
+  create: protectedProcedure
     .input(
       z.object({
         value: z
@@ -19,11 +19,12 @@ export const projectsRouter = createTRPCRouter({
           .max(10000, { message: "Prompt is too long" }),
       }),
     )
-    .mutation(async ({ input }) => {
+    .mutation(async ({ input, ctx }) => {
       const [createdProject] = await db
         .insert(projects)
         .values({
           name: generateSlug(2, { format: "kebab" }),
+          userId: ctx.auth.userId,
         })
         .returning();
 
@@ -48,11 +49,14 @@ export const projectsRouter = createTRPCRouter({
       return createdProject;
     }),
 
-  get: baseProcedure
+  get: protectedProcedure
     .input(z.object({ projectId: z.number() }))
-    .query(async ({ input }) => {
+    .query(async ({ input, ctx }) => {
       const project = await db.query.projects.findFirst({
-        where: eq(projects.id, input.projectId),
+        where: and(
+          eq(projects.id, input.projectId),
+          eq(projects.userId, ctx.auth.userId),
+        ),
         with: {
           messages: {
             where: eq(messages.projectId, input.projectId),
@@ -73,8 +77,9 @@ export const projectsRouter = createTRPCRouter({
       return project;
     }),
 
-  getMany: baseProcedure.query(async () => {
+  getMany: protectedProcedure.query(async ({ ctx }) => {
     const allProjects = await db.query.projects.findMany({
+      where: eq(projects.userId, ctx.auth.userId),
       with: {
         messages: {
           with: {

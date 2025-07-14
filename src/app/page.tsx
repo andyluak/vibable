@@ -7,10 +7,15 @@ import { useMutation } from "@tanstack/react-query";
 import { useState } from "react";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
+import { useClerk } from "@clerk/nextjs";
+import { useCurrentTheme } from "@/hooks/use-current-theme";
+import { dark } from "@clerk/themes";
 
 export default function Page() {
   const router = useRouter();
   const [value, setValue] = useState("");
+  const clerk = useClerk();
+  const currentTheme = useCurrentTheme();
 
   const trpc = useTRPC();
 
@@ -21,7 +26,15 @@ export default function Page() {
         router.push(`/projects/${project.id}`);
       },
       onError: (error) => {
-        toast.error(error.message);
+        if (error.data?.code === "UNAUTHORIZED") {
+          clerk.openSignIn({
+            appearance: {
+              baseTheme: currentTheme === "dark" ? dark : undefined,
+            },
+          });
+        } else {
+          toast.error(error.message);
+        }
       },
     }),
   );

@@ -36,7 +36,7 @@ export const fragments = pgTable("fragments", {
     .unique(),
   sandboxUrl: text("sandbox_url").notNull(),
   title: text("title").notNull(),
-  files: jsonb("files").notNull(),
+  files: jsonb("files").$type<Record<string, string>>(),
   createdAt: timestamp("created_at").notNull().defaultNow(),
   updatedAt: timestamp("updated_at").notNull().defaultNow(),
 });
@@ -46,6 +46,10 @@ export const projectsRelations = relations(projects, ({ many }) => ({
 }));
 
 export const messagesRelations = relations(messages, ({ one }) => ({
+  project: one(projects, {
+    fields: [messages.projectId],
+    references: [projects.id],
+  }),
   fragment: one(fragments, {
     fields: [messages.id],
     references: [fragments.messageId],

@@ -8,6 +8,13 @@
       "when": 1752479297254,
       "tag": "0000_curly_gladiator",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1752491246112,
+      "tag": "0001_sleepy_victor_mancha",
+      "breakpoints": true
     }
   ]
 }

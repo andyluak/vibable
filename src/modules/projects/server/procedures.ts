@@ -7,6 +7,7 @@ import { createTRPCRouter, baseProcedure } from "@/trpc/init";
 
 import { z } from "zod";
 import { eq } from "drizzle-orm";
+import { TRPCError } from "@trpc/server";
 
 export const projectsRouter = createTRPCRouter({
   create: baseProcedure
@@ -46,24 +47,43 @@ export const projectsRouter = createTRPCRouter({
 
       return createdProject;
     }),
-  getMany: baseProcedure
-    .input(
-      z.object({
-        projectId: z.number().min(1, { message: "Project is required" }),
-      }),
-    )
+
+  get: baseProcedure
+    .input(z.object({ projectId: z.number() }))
     .query(async ({ input }) => {
-      const allProjects = await db.query.projects.findMany({
+      const project = await db.query.projects.findFirst({
         where: eq(projects.id, input.projectId),
         with: {
           messages: {
+            where: eq(messages.projectId, input.projectId),
             with: {
               fragment: true,
             },
           },
         },
-        orderBy: (projects, { desc }) => [desc(projects.createdAt)],
       });
-      return allProjects;
+
+      if (!project) {
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "Project not found",
+        });
+      }
+
+      return project;
     }),
+
+  getMany: baseProcedure.query(async () => {
+    const allProjects = await db.query.projects.findMany({
+      with: {
+        messages: {
+          with: {
+            fragment: true,
+          },
+        },
+      },
+      orderBy: (projects, { desc }) => [desc(projects.createdAt)],
+    });
+    return allProjects;
+  }),
 });

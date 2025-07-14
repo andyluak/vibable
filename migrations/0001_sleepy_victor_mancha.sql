@@ -1,0 +1,1 @@
+ALTER TABLE "fragments" ALTER COLUMN "files" DROP NOT NULL;

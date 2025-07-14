@@ -5,6 +5,7 @@ import { INGEST_FUNCTIONS } from "@/inngest/function";
 import { createTRPCRouter, baseProcedure } from "@/trpc/init";
 
 import { z } from "zod";
+import { eq } from "drizzle-orm";
 
 export const messagesRouter = createTRPCRouter({
   create: baseProcedure
@@ -38,13 +39,20 @@ export const messagesRouter = createTRPCRouter({
 
       return createdMessage;
     }),
-  get: baseProcedure.query(async () => {
-    const allMessages = await db.query.messages.findMany({
-      orderBy: (messages, { desc }) => [desc(messages.createdAt)],
-      with: {
-        fragment: true,
-      },
-    });
-    return allMessages;
-  }),
+  get: baseProcedure
+    .input(
+      z.object({
+        projectId: z.number().min(1, { message: "Project is required" }),
+      }),
+    )
+    .query(async ({ input }) => {
+      const allMessages = await db.query.messages.findMany({
+        where: eq(messages.projectId, input.projectId),
+        orderBy: (messages, { desc }) => [desc(messages.createdAt)],
+        with: {
+          fragment: true,
+        },
+      });
+      return allMessages;
+    }),
 });
